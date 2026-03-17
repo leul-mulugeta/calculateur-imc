@@ -15,7 +15,12 @@ class IMCCalculator extends StatelessWidget {
         backgroundColor: Colors.grey[100],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(
+          top: 16,
+          left: 16,
+          right: 16,
+          bottom: 32,
+        ),
         child: Column(
           children: [
             Expanded(child: ZoneSaisie()),
@@ -23,10 +28,10 @@ class IMCCalculator extends StatelessWidget {
             ElevatedButton(
               onPressed: () {},
               style: ButtonStyle(
-                // Il faut savoir gérer l'animation car je change la couleur
-                // backgroundColor: WidgetStatePropertyAll(Colors.black),
-                // foregroundColor: WidgetStatePropertyAll(Colors.white),
-                elevation: WidgetStatePropertyAll(4.0),
+                backgroundColor: WidgetStatePropertyAll(Colors.black),
+                foregroundColor: WidgetStatePropertyAll(Colors.white),
+                overlayColor: WidgetStatePropertyAll(Colors.white24),
+                elevation: WidgetStatePropertyAll(4),
                 minimumSize: WidgetStatePropertyAll(Size(125, 50)),
               ),
               child: Text("Calculer"),
@@ -49,12 +54,16 @@ class ZoneSaisie extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4.0,
-      margin: const EdgeInsets.symmetric(vertical: 45.0),
       color: Colors.white,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(width: 1.5),
+        borderRadius: BorderRadius.circular(14),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Poids (Kg)"),
@@ -83,19 +92,18 @@ class ZoneInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15.0),
-        boxShadow: [BoxShadow(color: Colors.black)],
+        border: Border.all(width: 1.5),
+        borderRadius: BorderRadius.circular(14),
       ),
-      width: 400,
+      width: double.infinity,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text("Résultat imc"),
-          Text("24.3"),
-          Text("Normal"),
+          Text("Résultat imc", style: TextStyle(fontSize: 20)),
+          Text("24.3", style: TextStyle(fontSize: 34)),
+          Text("Normal", style: TextStyle(fontSize: 20)),
         ],
       ),
     );
