@@ -1,7 +1,25 @@
 import 'package:flutter/material.dart';
 
-class IMCCalculator extends StatelessWidget {
+class IMCCalculator extends StatefulWidget {
   const IMCCalculator({super.key});
+
+  @override
+  State<IMCCalculator> createState() => _IMCCalculatorState();
+}
+
+class _IMCCalculatorState extends State<IMCCalculator> {
+  double _imc = 0;
+  String _valeur = "";
+
+  final _poidsTextEditingController = TextEditingController();
+  final _tailleTextEditingController = TextEditingController();
+
+  @override
+  void dispose() {
+    _poidsTextEditingController.dispose();
+    _tailleTextEditingController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +41,19 @@ class IMCCalculator extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Expanded(child: ZoneSaisie()),
+            Expanded(
+              child: ZoneSaisie(
+                poidsTextEditingController: _poidsTextEditingController,
+                tailleTextEditingController: _tailleTextEditingController,
+              ),
+            ),
             SizedBox(height: 25),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                // Fermer le clavier
+                FocusScope.of(context).unfocus();
+                calculerIMC(context);
+              },
               style: ButtonStyle(
                 backgroundColor: WidgetStatePropertyAll(Colors.black),
                 foregroundColor: WidgetStatePropertyAll(Colors.white),
@@ -37,19 +64,76 @@ class IMCCalculator extends StatelessWidget {
               child: Text("Calculer"),
             ),
             SizedBox(height: 25),
-            Expanded(child: ZoneInfo()),
+            Expanded(
+              child: ZoneInfo(imc: _imc, valeur: _valeur),
+            ),
           ],
         ),
       ),
     );
   }
+
+  void calculerIMC(BuildContext context) {
+    // Récupérer les valeurs depuis la zone de saisie et convertir en double
+    double? poids = double.tryParse(_poidsTextEditingController.text);
+    double? taille = double.tryParse(_tailleTextEditingController.text);
+
+    if (poids != null && taille != null) {
+      if (poids < 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Veuillez fournir une valeur de poids positive."),
+          ),
+        );
+      } else if (taille < 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Veuillez fournir une valeur de taille positive."),
+          ),
+        );
+      } else {
+        double tailleEnM = taille / 100;
+        double imc = poids / (tailleEnM * tailleEnM);
+
+        setState(() {
+          _imc = double.parse((imc).toStringAsFixed(1));
+          _valeur = getValeur(imc);
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Veuillez fournir le poids et la taille.")),
+      );
+    }
+  }
+
+  String getValeur(double imc) {
+    if (imc < 16.5) {
+      return "Dénutrition";
+    } else if (imc < 18.5) {
+      return "Maigreur";
+    } else if (imc < 25) {
+      return "Normal";
+    } else if (imc < 30) {
+      return "Surpoids";
+    } else if (imc < 35) {
+      return "Obésité modérée";
+    } else if (imc < 40) {
+      return "Obésité sévère";
+    }
+    return "Obésité morbide";
+  }
 }
 
 class ZoneSaisie extends StatelessWidget {
-  final _poidsTextEditingController = TextEditingController();
-  final _tailleTextEditingController = TextEditingController();
+  final TextEditingController poidsTextEditingController;
+  final TextEditingController tailleTextEditingController;
 
-  ZoneSaisie({super.key});
+  const ZoneSaisie({
+    super.key,
+    required this.poidsTextEditingController,
+    required this.tailleTextEditingController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -69,14 +153,14 @@ class ZoneSaisie extends StatelessWidget {
             Text("Poids (Kg)"),
             TextField(
               decoration: InputDecoration(border: OutlineInputBorder()),
-              controller: _poidsTextEditingController,
+              controller: poidsTextEditingController,
               keyboardType: TextInputType.number,
             ),
             SizedBox(height: 50),
             Text("Taille (cm)"),
             TextField(
               decoration: InputDecoration(border: OutlineInputBorder()),
-              controller: _tailleTextEditingController,
+              controller: tailleTextEditingController,
               keyboardType: TextInputType.number,
             ),
           ],
@@ -87,7 +171,10 @@ class ZoneSaisie extends StatelessWidget {
 }
 
 class ZoneInfo extends StatelessWidget {
-  const ZoneInfo({super.key});
+  final double imc;
+  final String valeur;
+
+  const ZoneInfo({super.key, required this.imc, required this.valeur});
 
   @override
   Widget build(BuildContext context) {
@@ -102,8 +189,8 @@ class ZoneInfo extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Text("Résultat imc", style: TextStyle(fontSize: 20)),
-          Text("24.3", style: TextStyle(fontSize: 34)),
-          Text("Normal", style: TextStyle(fontSize: 20)),
+          Text(imc.toString(), style: TextStyle(fontSize: 34)),
+          Text(valeur, style: TextStyle(fontSize: 20)),
         ],
       ),
     );
