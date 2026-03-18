@@ -35,6 +35,7 @@ calculateur-imc/
 ├── lib/
 │   ├── main.dart        # Point d'entrée
 │   ├── screens/         # Écrans de l'interface
+│   ├── models/          # Logique métier
 └── pubspec.yaml         # Dépendances et configuration
 ```
 

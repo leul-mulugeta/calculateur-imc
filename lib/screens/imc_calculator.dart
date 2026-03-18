@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:calculateur_imc/models/imc.dart';
 
 class IMCCalculator extends StatefulWidget {
   const IMCCalculator({super.key});
@@ -9,10 +10,12 @@ class IMCCalculator extends StatefulWidget {
 
 class _IMCCalculatorState extends State<IMCCalculator> {
   double _imc = 0;
-  String _valeur = "";
+  String _categorie = "";
 
-  final _poidsTextEditingController = TextEditingController();
-  final _tailleTextEditingController = TextEditingController();
+  final TextEditingController _poidsTextEditingController =
+      TextEditingController();
+  final TextEditingController _tailleTextEditingController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -65,7 +68,7 @@ class _IMCCalculatorState extends State<IMCCalculator> {
             ),
             SizedBox(height: 25),
             Expanded(
-              child: ZoneInfo(imc: _imc, valeur: _valeur),
+              child: ZoneInfo(imc: _imc, categorie: _categorie),
             ),
           ],
         ),
@@ -79,25 +82,24 @@ class _IMCCalculatorState extends State<IMCCalculator> {
     double? taille = double.tryParse(_tailleTextEditingController.text);
 
     if (poids != null && taille != null) {
-      if (poids < 0) {
+      if (poids <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Veuillez fournir une valeur de poids positive."),
           ),
         );
-      } else if (taille < 0) {
+      } else if (taille <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Veuillez fournir une valeur de taille positive."),
           ),
         );
       } else {
-        double tailleEnM = taille / 100;
-        double imc = poids / (tailleEnM * tailleEnM);
+        Imc imc = Imc(poids, taille);
 
         setState(() {
-          _imc = double.parse((imc).toStringAsFixed(1));
-          _valeur = getValeur(imc);
+          _imc = imc.getImc();
+          _categorie = imc.getCategorie();
         });
       }
     } else {
@@ -105,23 +107,6 @@ class _IMCCalculatorState extends State<IMCCalculator> {
         SnackBar(content: Text("Veuillez fournir le poids et la taille.")),
       );
     }
-  }
-
-  String getValeur(double imc) {
-    if (imc < 16.5) {
-      return "Dénutrition";
-    } else if (imc < 18.5) {
-      return "Maigreur";
-    } else if (imc < 25) {
-      return "Normal";
-    } else if (imc < 30) {
-      return "Surpoids";
-    } else if (imc < 35) {
-      return "Obésité modérée";
-    } else if (imc < 40) {
-      return "Obésité sévère";
-    }
-    return "Obésité morbide";
   }
 }
 
@@ -172,9 +157,9 @@ class ZoneSaisie extends StatelessWidget {
 
 class ZoneInfo extends StatelessWidget {
   final double imc;
-  final String valeur;
+  final String categorie;
 
-  const ZoneInfo({super.key, required this.imc, required this.valeur});
+  const ZoneInfo({super.key, required this.imc, required this.categorie});
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +175,7 @@ class ZoneInfo extends StatelessWidget {
         children: [
           Text("Résultat imc", style: TextStyle(fontSize: 20)),
           Text(imc.toString(), style: TextStyle(fontSize: 34)),
-          Text(valeur, style: TextStyle(fontSize: 20)),
+          Text(categorie, style: TextStyle(fontSize: 20)),
         ],
       ),
     );
