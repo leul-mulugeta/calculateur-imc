@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:calculateur_imc/models/imc.dart';
+import 'package:calculateur_imc/screens/historique.dart';
 
 class IMCCalculator extends StatefulWidget {
   const IMCCalculator({super.key});
@@ -17,6 +18,8 @@ class _IMCCalculatorState extends State<IMCCalculator> {
   final TextEditingController _tailleTextEditingController =
       TextEditingController();
 
+  final List<Imc> _historique = [];
+
   @override
   void dispose() {
     _poidsTextEditingController.dispose();
@@ -33,6 +36,17 @@ class _IMCCalculatorState extends State<IMCCalculator> {
         title: Center(
           child: Text("Calculateur d'IMC", style: TextStyle(fontSize: 30)),
         ),
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Historique(historique: _historique),
+              ),
+            ),
+            icon: Icon(Icons.history),
+          ),
+        ],
         backgroundColor: Colors.grey[100],
       ),
       body: Padding(
@@ -95,7 +109,8 @@ class _IMCCalculatorState extends State<IMCCalculator> {
           ),
         );
       } else {
-        Imc imc = Imc(poids, taille);
+        Imc imc = Imc(poids, taille, DateTime.now());
+        _historique.add(imc);
 
         setState(() {
           _imc = imc.getImc();

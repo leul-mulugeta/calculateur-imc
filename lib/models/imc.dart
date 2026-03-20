@@ -1,8 +1,11 @@
+import 'package:intl/intl.dart';
+
 class Imc {
   final double _poids;
   final double _taille;
+  final DateTime _date;
 
-  Imc(this._poids, this._taille);
+  Imc(this._poids, this._taille, this._date);
 
   double getImc() {
     double tailleEnM = (_taille / 100);
@@ -26,5 +29,13 @@ class Imc {
       return "Obésité sévère";
     }
     return "Obésité morbide";
+  }
+
+  String getDate() {
+    return DateFormat("d MMMM yyyy").format(_date);
+  }
+
+  String getDisplayText() {
+    return 'IMC: ${getImc()}, Categorie: ${getCategorie()}\nPoids: $_poids, Taille: $_taille';
   }
 }
