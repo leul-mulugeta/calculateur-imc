@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:calculateur_imc/providers/historique_provider.dart';
 import 'package:calculateur_imc/models/imc.dart';
 import 'package:calculateur_imc/screens/historique.dart';
 
@@ -17,8 +19,6 @@ class _IMCCalculatorState extends State<IMCCalculator> {
       TextEditingController();
   final TextEditingController _tailleTextEditingController =
       TextEditingController();
-
-  final List<Imc> _historique = [];
 
   @override
   void dispose() {
@@ -40,9 +40,7 @@ class _IMCCalculatorState extends State<IMCCalculator> {
           IconButton(
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => Historique(historique: _historique),
-              ),
+              MaterialPageRoute(builder: (context) => Historique()),
             ),
             icon: Icon(Icons.history),
           ),
@@ -95,6 +93,9 @@ class _IMCCalculatorState extends State<IMCCalculator> {
     double? poids = double.tryParse(_poidsTextEditingController.text);
     double? taille = double.tryParse(_tailleTextEditingController.text);
 
+    final HistoriqueProvider historiqueProvider = context
+        .read<HistoriqueProvider>();
+
     if (poids != null && taille != null) {
       if (poids <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -110,7 +111,7 @@ class _IMCCalculatorState extends State<IMCCalculator> {
         );
       } else {
         Imc imc = Imc(poids, taille, DateTime.now());
-        _historique.add(imc);
+        historiqueProvider.add(imc);
 
         setState(() {
           _imc = imc.getImc();
